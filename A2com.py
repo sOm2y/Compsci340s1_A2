@@ -55,7 +55,7 @@ def list_files(startpath):
             
 
 
-#change filepath
+#TODO:change filepath
 def cd(command):
     try:
         if len(command)>1:
@@ -78,14 +78,28 @@ def cd(command):
 #In the output files are indicated with “f: ” preceding their names and directories are indicated with “d: ”.
 def ls():
     #print(root)
-    for the_file in os.listdir(root):
+    try:
+        existDir=[]
+        for the_file in os.listdir(root):
         #print(the_file)
-        fd=re.split('-',the_file)
-        if len(fd)>2:
-            print("d: "+fd[len(fd)-1])
-        else:
-            print("f: "+fd[1])
-
+            fd=re.split('-',the_file)
+          
+            if len(fd)>2:
+                if fd[1] in existDir:
+                    pass
+                else:
+                    existDir.append(fd[1])
+                    print("d: "+fd[1])
+            else:
+                print("f: "+fd[1])
+       
+    except:
+        print("ls: Unexpected error:", sys.exc_info())
+    else:
+        pass
+    finally:
+        pass
+    
 
 #TODO: shows the output of the real “ls -l” command on the real A2dir directory
 def rls(command):
