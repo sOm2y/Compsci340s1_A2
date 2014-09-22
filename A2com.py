@@ -13,31 +13,24 @@ import shlex
 import os
 import sys
 import subprocess
+import re
+import io
 
 #import readline
 
-#global variable
-global dictCounter
-dictCounter=1
-global job_counter
-job_counter=1
-global _vaildCommand
-_vaildCommand=True
-dict={}
-jobList={}
-state=[]
 
-#initialization
 
+
+
+#initialise dir
+global root
 path = 'A2dir' #create A2dir
 if not os.path.exists(path):
     os.makedirs(path)
 
-global root
 root=os.getcwd()+"/A2dir"
-
 os.chdir(root)
-
+curPath="-"
 
 #read input
 def word_list(line):
@@ -61,22 +54,69 @@ def list_files(startpath):
             print('{}{}'.format(subindent, f))
             
 
+
+#change filepath
+def cd(command):
+    try:
+        if len(command)>1:
+            if  command[1].endswith("-"):
+                _path=command[1]
+                return _path
+            else:
+                raise OSError          
+        else:
+            _path="-"
+            return _path
+    except OSError:
+        print("cd: "+command[1]+": No such file or directory")
+
+
+
 #TODO:list the files and directories in the named ffs directory. 
 #If no name is given use the current working ffs directory. 
 #Uses the same rules for absolute and relative as cd. 
 #In the output files are indicated with “f: ” preceding their names and directories are indicated with “d: ”.
 def ls():
+    #print(root)
+    for the_file in os.listdir(root):
+        #print(the_file)
+        fd=re.split('-',the_file)
+        if len(fd)>2:
+            print("d: "+fd[len(fd)-1])
+        else:
+            print("f: "+fd[1])
+
 
 #TODO: shows the output of the real “ls -l” command on the real A2dir directory
 def rls(command):
     os.system('ls -l')
 
+def genLine(path):
+    line="="
+    for i in range(len(path)):       
+        line=line+"="
+    print(line)
+        
 
 #TODO: shows all files below this directory as an indented tree structure. 
 #Uses the same parameter rules as ls.
 def tree():
-    list_files(root)
+    
+    for the_file in os.listdir(root):
+        pathOrFile=re.split('-',the_file)
+        _path="-"
+        for i in range(len(pathOrFile)):
+            
+            if len(pathOrFile)==2:  #in root dir                
+                print(_path)
 
+            elif i<(len(pathOrFile)-1): #not last element
+                _path=_path+pathOrFile[i]+"-"
+                print(_path)
+                genLine(_path)
+
+            elif i == (len(pathOrFile)-1):#last element in array
+                print(pathOrFile[i])
      
 
 #TODO: removes all files in the ffs root directory. 
@@ -93,8 +133,14 @@ def clear():
 #The name must not end with a “-” otherwise it would be a directory and we don’t create directories directly. 
 #The name can be either absolute, starting with a “-”, or relative to the working ffs directory.
 def create(command):
-    return open(command[1], 'w+')
-    
+    try:
+        if  command[1].endswith("-"):
+            raise OSError
+        else:
+            #_filename=re.split('-',command[1])
+            return open(command[1], 'w+')
+    except OSError:
+        print("create: "+command[1]+" Invaild Filename")    
 
 
 
@@ -104,48 +150,66 @@ def create(command):
 #starting one space after the filename. 
 #The text is appended to the file. 
 #This is the only way to put data into a file. File names can be absolute or relative.
-def add():
-    pass
+def add(command):
+    try:
+        with open("-"+command[1], 'r', encoding='utf-8') as readFile:
+            content=readFile.read()
+        with open("-"+command[1], 'w', encoding='utf-8') as writeFile:
+            writeFile.write(content+command[2])
+    except:
+        print("add: Invaild input"+sys.exc_info())
+    finally:
+        readFile.close()
+        writeFile.close()
+
+
+#TODO:displays the contents of the named file. File names can be absolute or relative.  
+def cat(command):
+    try:
+        with open("-"+command[1], 'r', encoding='utf-8') as file:
+            content=file.read()
+            print (content)
+    except:
+        print("cat: Invaild input"+sys.exc_info()) 
+    finally:
+        file.close()
 
 
 #TODO: deletes the named file. File names can be absolute or relative.
 def delete():
     pass
 
+#TODO: deletes selected dir
+def dd(command):
+    try:
+        for files in os.listdir(root):
+            #print(files)
+            pathOrFile=re.split('-',files)
+            for filename in pathOrFile:
+                #print(filename);
+
+                if command[1] == filename:
+                    print(filename);
+                    os.remove(files)
+    except:
+        print("delete directory error:", sys.exc_info())
+ 
+   
 
 #print current path
-def pwd():
-    print (os.getcwd())
+def pwd(_path):
+    print (_path)
 
 
 #quit programme
 def quit():
     sys.exit(0)
 
-#change filepath
-def cd(command):
-    try:
-        _curPath = os.getcwd()
-        if len(command)>1:
-            os.chdir(_curPath + "/" + command[1])
-        else:
-            print("cd: "+command[0]+": No such file or directory")
-    except OSError:
-        print("cd: "+command[1]+": No such file or directory")
 
-#add job 
-def add_job(command,child,job_counter):
-    try:
-        idCommand=[]
-        idCommand[0]=child
-        idCommand[1]=command
-        jobList.update({job_counter : " ".join(idCommand)})
-        print("["+str(job_counter)+"] "+str(child))  
-    except:
-         print("Unexpected error2:", sys.exc_info())
+
 
 #rest_command
-def rest_command(command,job_counter,_vaildCommand):
+def rest_command(command):
     try:
         ampersand='&' in command
         if ampersand:
@@ -166,107 +230,23 @@ def rest_command(command,job_counter,_vaildCommand):
 
 
 
-# # history command
-# #def hist(command):
-# def history(command,dict):
-#     new_command=[]
-#     if(len(command)>1):
-#         #print(dict)
-#         print(dict.get(int(command[1])))
-        
-#         new_command=str(dict.get(int(command[1]))).split()
-#         print(new_command)
-#         exec_command(new_command,dict,job_counter)
-#     else:     
-#         if(len(dict)>10):
-#             for i in range((len(dict)-10),len(dict)):
-#                 dict_list=str(i+1)+": "+str(dict.get(i+1))
-#                 print(dict_list)
-#         else:
-#             for i in range(len(dict)):
-#                 dict_list=str(i+1)+": "+str(dict.get(i+1))
-#                 print(dict_list)
-    
-
-
-# #check "|" in right position
-# def checkPipe(command):
-#     if command[0] == '|' or command[len(command)-1]=='|':
-#         print("Invalid use of pipe '|'. ")
-#         #print(command)
-#         return False
-#     else:
-#         for i in range( 1,len(command)-1):
-#             if command[i]=='|' and command[i+1]=='|':
-#                 print("Invalid use of pipe '|'.")
-#                 return False
-#     #print("correct pipeline input")
-#     return True
-            
-            
-# #pipeline
-# def pipeline(command):
-    
-#         try:      
-#             if '&' in command:
-#                 amper=1
-#             else:
-#                 amper=0
-                
-#             #child process
-#             child=os.fork()
-#             if child==0 :
-#                 while '|' in command:
-#                     #get '|' index position    
-#                     pipe_index=command.index('|')
-#                     r,w=os.pipe()
-#                     grand_child=os.fork()
-#                     if grand_child==0:
-#                         os.dup2(w,1)#replace to w in index 1
-#                         os.close(w)#close w
-#                         os.close(r)# close stand in 
-#                         os.execvp(command[0],command[0:pipe_index])# execute command before '|'
-#                     os.dup2(r,0)
-#                     os.close(r)
-#                     os.close(w)
-#                     del command[:pipe_index+1]
-#                 os.execvp(command[0],command)
-#             else:
-#                 if amper==0:
-#                     os.waitpid(child,0)
-#         except:
-#             print("Unexpected error2:", sys.exc_info()[0])
-
-
-# #jobs
-# def jobs(jobList):
-#     for jobKey in jobList.keys():
-#         pid=jobList[jobKey]
-#         ps=subprocess.Popen(['ps','-p',str(pid),'-o','state='],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
-#         result,error=ps.communicate()
-#         if result.decode()!='':
-#             print('[{}] <{}> {}'.format(jobKey,result.decode()[0],str(pid)))
-#             #print("jobs")
-  
-
 
 
 #execute commands            
-def exec_command(command,dict,job_counter):
+def exec_command(command):
+
     try:
+        global curPath
+        
+    
 #        last_command = _command[len(_command) - 1]
-        if command[0] == 'history' or command[0] == 'h':
-            history(command,dict)
-        elif command[0] == 'pwd':
-            pwd()
+        if command[0] == 'pwd':
+            if (not curPath.startswith("-")):
+                print("-"+curPath)
+            else:
+                print(curPath)
         elif command[0] == 'cd':
-            cd(command)
-        elif '|' in command:
-            if checkPipe(command):
-                pipeline(command)
-                #print("pipe")
-        elif command[0]=='jobs':
-            jobs(jobList)
+            curPath=cd(command)
         elif command[0]=='rls':
             rls(command) 
         elif command[0]=='create':
@@ -277,8 +257,14 @@ def exec_command(command,dict,job_counter):
             clear()
         elif command[0]=='ls':
             ls()
+        elif command[0]=='add':
+            add(command)
+        elif command[0]=='cat':
+            cat(command)
+        elif command[0]=='dd':
+            dd(command)    
         else:
-            rest_command(command,job_counter,_vaildCommand)
+            rest_command(command)
     except:
         print("Unexpected error1:", sys.exc_info())
         
@@ -287,6 +273,7 @@ def exec_command(command,dict,job_counter):
     
         
 while True:
+
     try:
         line = input('ffs> ')
     except EOFError:
@@ -295,14 +282,7 @@ while True:
     if _command[0]=='quit':
         quit()
     
-    exec_command(_command,dict,job_counter)
+    exec_command(_command)
 
     
 
-    if _vaildCommand:
-        dict.update({dictCounter : " ".join(_command)})
-    #print(dict)
-    #print(len(dict))
-    dictCounter+=1
-    job_counter+=1
-   
