@@ -190,8 +190,23 @@ def cat(command):
 
 
 #TODO: deletes the named file. File names can be absolute or relative.
-def delete():
-    pass
+def delete(command):
+    try:
+         for files in os.listdir(root):
+            if command[1] in files:
+                if not command[1].startswith("-"):
+                    delFile="-"+command[1]
+                    os.remove(delFile)    
+
+                else:
+                    os.remove(command[1])
+    except FileNotFoundError:
+        pass
+        #print("delete file error:", sys.exc_info())
+    else:
+        pass
+    finally:
+        pass
 
 #TODO: deletes selected dir
 def dd(command):
@@ -276,7 +291,9 @@ def exec_command(command):
         elif command[0]=='cat':
             cat(command)
         elif command[0]=='dd':
-            dd(command)    
+            dd(command)
+        elif command[0]=="delete":
+            delete(command)    
         else:
             rest_command(command)
     except:
