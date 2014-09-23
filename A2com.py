@@ -52,16 +52,27 @@ def list_files(startpath):
         subindent = ' ' * 4 * (level + 1)
         for f in files:
             print('{}{}'.format(subindent, f))
-            
+           
 
 
 #TODO:change filepath
 def cd(command):
     try:
+        newPath=""
         if len(command)>1:
             if  command[1].endswith("-"):
                 _path=command[1]
                 return _path
+            elif ".." == command[1]:
+                print (curPath)
+                d=re.split('-',curPath)
+                print(d)
+                for folder in range(len(d)-2):
+                    print(d[folder])
+                    newPath=newPath+d[folder]+"-"
+                    print(newPath)
+                return newPath
+
             else:
                 raise OSError          
         else:
@@ -166,15 +177,20 @@ def create(command):
 #This is the only way to put data into a file. File names can be absolute or relative.
 def add(command):
     try:
+        file_content=""
+        for char in command:
+            if char is not command[0]:
+                if char is not command[1]:
+                    file_content=file_content+" "+char
         with open("-"+command[1], 'r', encoding='utf-8') as readFile:
             content=readFile.read()
         with open("-"+command[1], 'w', encoding='utf-8') as writeFile:
-            writeFile.write(content+command[2])
+            writeFile.write(content+file_content)
     except:
         print("add: Invaild input"+sys.exc_info())
-    finally:
-        readFile.close()
-        writeFile.close()
+    # finally:
+        # readFile.close()
+        # writeFile.close()
 
 
 #TODO:displays the contents of the named file. File names can be absolute or relative.  
@@ -271,7 +287,8 @@ def exec_command(command):
 #        last_command = _command[len(_command) - 1]
         if command[0] == 'pwd':
             if (not curPath.startswith("-")):
-                print("-"+curPath)
+                curPath="-"+curPath
+                print(curPath)
             else:
                 print(curPath)
         elif command[0] == 'cd':
