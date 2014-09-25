@@ -1,0 +1,21 @@
+Question:1
+255 bytes
+
+Question:2
+All records are stored in one place
+Easy to understand
+Simple sorting and filtering can be carried out
+Can use a standard spreadsheet to store it
+Alternatively, you can use a single table in a DBMS to store it
+
+Question3:
+Potential duplication
+Non-unique records
+Harder to update
+inherently ineffcient
+harder to change data format
+poor at complex queries
+almost no security
+
+
+Question4:
