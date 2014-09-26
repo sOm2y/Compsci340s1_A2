@@ -55,7 +55,7 @@ def list_files(startpath):
 
 
 #TODO:change filepath
-def cd(command):
+def cd(command,curPath):
     try:
         newPath=""
         if len(command)>1:
@@ -106,26 +106,27 @@ def ls(curPath):
             fd=re.split('-',the_file)
             curFolder=re.split('-',curPath)
             #print(len(curFolder))
-            print(curFolder)
-            print(fd)
+            # print(curFolder)
+            # print(fd)
             if (len(fd)>len(curFolder)) and (curFolder[len(curFolder)-2]==fd[len(curFolder)-2]):#under this directory
-                print(curFolder)
-                print(fd)
+                # print(curFolder)
+                # print(fd)
                 if fd[len(curFolder)-1] in existDir:
                     
                     #print(fd[len(curFolder)-1])
                     pass
                 else:
-                    print(curFolder)
-                    print(fd)
+                    # print(curFolder)
+                    # print(fd)
                     if len(fd)==len(curFolder):#if it is a file
                         print("f: "+fd[len(fd)-1])
 
                     existDir.append(fd[len(curFolder)-1])
                     print("d: "+fd[len(curFolder)-1])
             else:
-                if len(fd)==len(curFolder):#if it is a file
-                    print("f: "+fd[len(fd)-1])
+                if len(fd)==len(curFolder) and fd[len(fd)-2]==curFolder[len(curFolder)-2]:#if it is a file
+                        print("f: "+fd[len(fd)-1])
+                    
                 pass
                 # if fd[len(curFolder)-1] in existDir:
                 #     #print(fd[len(curFolder)-1])
@@ -159,22 +160,18 @@ def genLine(path):
 #TODO: shows all files below this directory as an indented tree structure. 
 #Uses the same parameter rules as ls.
 def tree():
-    
+    _path=""
     for the_file in os.listdir(root):
         pathOrFile=re.split('-',the_file)
-        _path="-"
+        
         for i in range(len(pathOrFile)):
-            
-            if len(pathOrFile)==2:  #in root dir                
-                print(_path)
-
-            elif i<(len(pathOrFile)-1): #not last elecdment
-                _path=_path+pathOrFile[i]+"-"
-                print(_path)
-                genLine(_path)
-
-            elif i == (len(pathOrFile)-1):#last element in array
+            _path=_path+pathOrFile[i]+"-"
+            arr_path=re.split('-',_path)
+            if the_file
+            #TODO:compare exsit path and read path
+            if len(pathOrFile)-1==i:   #check last element
                 print(pathOrFile[i])
+            
      
 
 #TODO: removes all files in the ffs root directory. 
@@ -325,7 +322,7 @@ def exec_command(command):
             else:
                 print(curPath)
         elif command[0] == 'cd':
-            curPath=cd(command)
+            curPath=cd(command,curPath)
         elif command[0]=='rls':
             rls(command) 
         elif command[0]=='create':
