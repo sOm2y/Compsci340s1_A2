@@ -2,11 +2,12 @@ Question:1
 255 bytes
 
 Question:2
-All records are stored in one place
-Easy to understand
-Simple sorting and filtering can be carried out
-Can use a standard spreadsheet to store it
-Alternatively, you can use a single table in a DBMS to store it
+All records are stored in one place.
+Easy to understand.
+Simple sorting and filtering can be carried out.
+Can use a standard spreadsheet to store it.
+Alternatively, you can use a single table in a DBMS to store it.
+When you are doing 'ls' command, it will much faster than traditional hierarchical system. The flat file system don't need to go to every folder to display the file.
 
 Question3:
 Potential duplication

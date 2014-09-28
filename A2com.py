@@ -59,6 +59,18 @@ def cd(command,curPath):
     try:
         newPath=""
         if len(command)>1:
+            if ".." == command[1]:
+                #print (curPath)
+                d=re.split('-',curPath)
+                #print(d)
+                for folder in range(len(d)-2):
+                    #print(d[folder])
+                    newPath=newPath+d[folder]+"-"
+                    #print(newPath)
+                return newPath
+
+
+
             if not command[1].startswith("-"):#relative path
                 if command[1].endswith("-"):
                     curPath=curPath+command[1] 
@@ -66,16 +78,7 @@ def cd(command,curPath):
                 else:
                     curPath=curPath+command[1]+"-"
                     return curPath    
-            elif ".." == command[1]:
-                print (curPath)
-                d=re.split('-',curPath)
-                print(d)
-                for folder in range(len(d)-2):
-                    print(d[folder])
-                    newPath=newPath+d[folder]+"-"
-                    print(newPath)
-                return newPath
-
+           
             else: 
                 if command[1].endswith("-"):
                     curPath=command[1]  #absolute path
@@ -97,17 +100,24 @@ def cd(command,curPath):
 #If no name is given use the current working ffs directory. 
 #Uses the same rules for absolute and relative as cd. 
 #In the output files are indicated with “f: ” preceding their names and directories are indicated with “d: ”.
-def ls(curPath):
+def ls(curPath,command):
     #print(root)
     try:
         existDir=[]
+        if len(command)==2 :
+            curPath=curPath+command[1]+"-"
+            print(curPath)
         for the_file in os.listdir(root):
         #print(the_file)
+
+
             fd=re.split('-',the_file)
             curFolder=re.split('-',curPath)
             #print(len(curFolder))
             # print(curFolder)
             # print(fd)
+
+
             if (len(fd)>len(curFolder)) and (curFolder[len(curFolder)-2]==fd[len(curFolder)-2]):#under this directory
                 # print(curFolder)
                 # print(fd)
@@ -166,12 +176,15 @@ def tree():
         
         for i in range(len(pathOrFile)):
             _path=_path+pathOrFile[i]+"-"
+
             arr_path=re.split('-',_path)
-            if the_file
-            #TODO:compare exsit path and read path
-            if len(pathOrFile)-1==i:   #check last element
+            if arr_path[len(arr_path)-2]== pathOrFile[i]:
                 print(pathOrFile[i])
-            
+                #TODO:compare exsit path and read path
+                if len(pathOrFile)-1==i:   #check last element
+                    #print(pathOrFile[i])
+                    pass
+                
      
 
 #TODO: removes all files in the ffs root directory. 
@@ -332,7 +345,7 @@ def exec_command(command):
         elif command[0]=='clear':
             clear()
         elif command[0]=='ls':
-            ls(curPath)
+            ls(curPath,command)
         elif command[0]=='add':
             add(command)
         elif command[0]=='cat':
@@ -354,6 +367,7 @@ while True:
 
     try:
         line = input('ffs> ')
+        print(line)
     except EOFError:
         break
     _command = word_list(line)
