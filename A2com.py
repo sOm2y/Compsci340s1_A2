@@ -277,7 +277,7 @@ def dd(command):
                 #print(filename);
 
                 if command[1] == filename:
-                    print(filename);
+                    #print(filename);
                     os.remove(files)
     except:
         print("delete directory error:", sys.exc_info())
