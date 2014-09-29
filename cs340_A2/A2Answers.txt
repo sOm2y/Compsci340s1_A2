@@ -1,0 +1,30 @@
+#Author: Yue Yin
+#UPI: yyin888
+#ID: 5398177
+
+
+
+Question:1
+255 bytes
+
+Question:2
+1.All records are stored in one place.
+2.Easy to understand.
+3.Simple sorting and filtering can be carried out.
+4.Can use a standard spreadsheet to store it.
+5.Alternatively, you can use a single table in a DBMS to store it.
+
+When you are doing 'ls' command, it will much faster than traditional hierarchical system. The flat file system don't need to go to every folder to display the file.
+
+Question3:
+1.Potential duplication
+2.Non-unique records
+3.Harder to update
+4.inherently ineffcient
+5.harder to change data format
+6.poor at complex queries
+7.almost no security
+
+
+Question4:
+when we create a file or path, we check the file or path whether duplicate or not, it will minimise potential duplication.
